@@ -322,11 +322,11 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
 
 <!-- Bottom Nav (scroll down to show) -->
 <div class="bottom-nav" id="bottomNav">
+  <button id="bnTop"><span class="bnav-icon">🏡</span><span class="bnav-label" id="bnTopL">トップ</span></button>
   <button id="bnAsa"><span class="bnav-icon">🎒</span><span class="bnav-label" id="bnAsaL">じゅんび</span></button>
   <button id="bnKaeri"><span class="bnav-icon">🏠</span><span class="bnav-label" id="bnKaeriL">もちかえり</span></button>
   <button id="bnParent"><span class="bnav-icon">🔒</span><span class="bnav-label" id="bnParentL">おや</span></button>
   <button id="bnHow"><span class="bnav-icon">📖</span><span class="bnav-label" id="bnHowL">つかいかた</span></button>
-  <button id="bnTop"><span class="bnav-icon">⬆️</span><span class="bnav-label" id="bnTopL">うえへ</span></button>
 </div>
 
 <div id="celebration">
@@ -345,7 +345,7 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
       morning:'おはよう', afternoon:'こんにちは', evening:'おかえり',
       morningPrep:'あさの じゅんび', returnCheck:'もちかえり チェック', parentMode:'おやモード',
       prepOK:'じゅんびOK！', returnOK:'もちかえりOK！',
-      howToUse:'つかいかた', goUp:'うえへ', prep:'じゅんび', bringBack:'もちかえり', parent:'おや',
+      howToUse:'つかいかた', goUp:'うえへ', topNav:'トップ', prep:'じゅんび', bringBack:'もちかえり', parent:'おや',
       perfect:'かんぺき！', allDone:'ぜんぶ できたよ！',
       todaySchedule:'きょうの じかんわり：',
       streakDays:'にち れんぞく かんぺき！', weeklyReport:'しゅうかん レポート',
@@ -367,7 +367,7 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
       morning:'Good morning', afternoon:'Hello', evening:'Welcome back',
       morningPrep:'Morning Prep', returnCheck:'Bring-back Check', parentMode:'Parent Mode',
       prepOK:'Ready!', returnOK:'Got it!',
-      howToUse:'How to use', goUp:'Top', prep:'Prep', bringBack:'Return', parent:'Parent',
+      howToUse:'How to use', goUp:'Up', topNav:'Top', prep:'Prep', bringBack:'Return', parent:'Parent',
       perfect:'Perfect!', allDone:'Everything is done!',
       todaySchedule:"Today's classes: ",
       streakDays:' days perfect streak!', weeklyReport:'Weekly Report',
@@ -1130,7 +1130,7 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
     if(e('bnKaeriL'))e('bnKaeriL').textContent=t('bringBack');
     if(e('bnParentL'))e('bnParentL').textContent=t('parent');
     if(e('bnHowL'))e('bnHowL').textContent=t('howToUse');
-    if(e('bnTopL'))e('bnTopL').textContent=t('goUp');
+    if(e('bnTopL'))e('bnTopL').textContent=t('topNav');
   }
 
   function renderTop(speak) {
@@ -1281,7 +1281,7 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
     if (!hb.classList.contains('show')) hb.classList.add('show');
     setTimeout(() => hb.scrollIntoView({ behavior:'smooth' }), 100);
   });
-  document.getElementById('bnTop').addEventListener('click', () => { window.scrollTo({ top:0, behavior:'smooth' }); });
+  document.getElementById('bnTop').addEventListener('click', () => { showScreen('top-screen'); renderTop(); window.scrollTo({ top:0, behavior:'smooth' }); });
 
   // === Gist Sync ===
   function saveSyncConfig() {
