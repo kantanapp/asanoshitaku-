@@ -1446,6 +1446,31 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
     }, { passive: true });
   })();
 
+  // === 無操作タイマー（5分でTOPへ戻る） ===
+  (function() {
+    const IDLE_MS = 5 * 60 * 1000;
+    let idleTimer = null;
+    function goTop() {
+      const top = document.getElementById('top-screen');
+      if (top && top.classList.contains('active')) return;
+      pinBuffer = '';
+      showScreen('top-screen');
+      renderTop();
+    }
+    function resetIdle() {
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(goTop, IDLE_MS);
+    }
+    ['touchstart','mousedown','keydown','pointerdown','wheel'].forEach(ev => {
+      document.addEventListener(ev, resetIdle, { passive: true });
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) { if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; } }
+      else { resetIdle(); }
+    });
+    resetIdle();
+  })();
+
   // PWA Service Worker
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
