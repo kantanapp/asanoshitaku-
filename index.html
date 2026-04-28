@@ -1070,6 +1070,7 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
         syncConfig = { token, gistId };
         saveSyncConfig();
         await syncPull();
+        startAutoSync();
         alert('せつぞく できました！');
         renderParentTab();
       } catch (err) {
@@ -1086,6 +1087,7 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
     if (document.getElementById('sSyncDisconnect')) {
       document.getElementById('sSyncDisconnect').addEventListener('click', () => {
         if (!confirm('どうきを せつだん しますか？')) return;
+        stopAutoSync();
         syncConfig = null; saveSyncConfig();
         renderParentTab();
       });
@@ -1346,6 +1348,8 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
         localStorage.setItem('asajunbi_updatedAt', String(remoteAt));
         dailyReset();
         renderTop(false);
+        const kidEl = document.getElementById('kid-screen');
+        if (kidEl && kidEl.classList.contains('active')) renderKid();
       }
     } catch (e) { console.log('sync pull error', e); }
   }
@@ -1367,6 +1371,19 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
     if (!syncConfig) return;
     clearTimeout(pushTimer);
     pushTimer = setTimeout(syncPush, 2000);
+  }
+
+  // === 自動同期(30秒ごとにpull) ===
+  const AUTO_SYNC_INTERVAL = 30 * 1000;
+  let autoSyncTimer = null;
+  function startAutoSync() {
+    if (autoSyncTimer || !syncConfig) return;
+    autoSyncTimer = setInterval(() => {
+      if (!document.hidden && syncConfig) syncPull();
+    }, AUTO_SYNC_INTERVAL);
+  }
+  function stopAutoSync() {
+    if (autoSyncTimer) { clearInterval(autoSyncTimer); autoSyncTimer = null; }
   }
 
   // === Notifications ===
@@ -1410,7 +1427,7 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
   load(); dailyReset(); renderTop(); renderDateWeatherTop(null);
   fetchWeather().then(w=>{if(w)renderDateWeatherTop(w);});
   setupNotifications();
-  if (syncConfig) syncPull();
+  if (syncConfig) { syncPull(); startAutoSync(); }
   document.addEventListener('visibilitychange', () => { if (!document.hidden && syncConfig) syncPull(); });
   // === Pull to Refresh ===
   (function() {
