@@ -992,6 +992,12 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
     const notifyM = settings.notifyMorning || '';
     const notifyE = settings.notifyEvening || '';
     body.innerHTML = `
+    <div class="setting-group" style="margin-top:12px;">
+      <div class="setting-row" style="flex-direction:column;align-items:flex-start;gap:8px;">
+        <label>👨‍👩‍👧‍👦 プロフィール</label>
+        <div id="profileManage" style="width:100%;"></div>
+      </div>
+    </div>
     <div class="setting-group">
       <div class="setting-row">
         <label>🔊 おとの よみあげ</label>
@@ -1004,12 +1010,6 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
     </div>
     <div class="setting-group">
       <div class="setting-row"><label>🔑 パスワード (1〜8けた)</label><input type="password" id="sPin" maxlength="8" inputmode="numeric" value="${pin}" placeholder="1"></div>
-    </div>
-    <div class="setting-group" style="margin-top:12px;">
-      <div class="setting-row" style="flex-direction:column;align-items:flex-start;gap:8px;">
-        <label>👨‍👩‍👧‍👦 プロフィール</label>
-        <div id="profileManage" style="width:100%;"></div>
-      </div>
     </div>
     <div class="setting-group">
       <div class="setting-row" style="flex-direction:column;align-items:flex-start;gap:8px;">
