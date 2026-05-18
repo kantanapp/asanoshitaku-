@@ -1279,14 +1279,7 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
         lastTap = 0;
         showScreen('top-screen'); renderTop();
       } else {
-        // シングルタップ → モード切替(少し待ってダブルタップか判定)
         lastTap = now;
-        setTimeout(() => {
-          if (lastTap === now) {
-            kidMode = kidMode === 'asa' ? 'kaeri' : 'asa';
-            renderKid();
-          }
-        }, 360);
       }
     });
   })();
