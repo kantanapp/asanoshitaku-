@@ -993,9 +993,6 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
     const notifyE = settings.notifyEvening || '';
     body.innerHTML = `
     <div class="setting-group">
-      <div class="setting-row"><label>👧 おなまえ</label><input type="text" id="sName" value="${(profiles.find(p=>p.id===currentProfileId)||{}).name || settings.childName || ''}" placeholder="おなまえ"></div>
-    </div>
-    <div class="setting-group">
       <div class="setting-row">
         <label>🔊 おとの よみあげ</label>
         <button id="sVoiceToggle" style="padding:8px 20px;border-radius:20px;border:2px solid ${settings.voiceEnabled?'#66BB6A':'#ddd'};background:${settings.voiceEnabled?'#E8F5E9':'#f5f5f5'};color:${settings.voiceEnabled?'#2E7D32':'#999'};font-size:14px;font-weight:700;cursor:pointer;">${settings.voiceEnabled?'🔊 オン':'🔇 オフ'}</button>
@@ -1123,11 +1120,6 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
     }
 
     document.getElementById('sSave').addEventListener('click',()=>{
-      const newName = document.getElementById('sName').value.trim();
-      settings.childName = newName;
-      // おなまえを現在のプロフィールにも同期
-      const curP = profiles.find(p => p.id === currentProfileId);
-      if (curP) curP.name = newName;
       settings.notifyMorning = document.getElementById('sNotifyM').value;
       settings.notifyEvening = document.getElementById('sNotifyE').value;
       // プロフィール名保存
