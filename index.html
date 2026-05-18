@@ -178,6 +178,8 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
 .day-picker { display: flex; gap: 4px; flex-wrap: wrap; }
 .day-pick { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #ddd; background: #fff; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .day-pick.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.day-picker-asa   .day-pick.active { background: #FF7043; border-color: #FF7043; color: #fff; }
+.day-picker-kaeri .day-pick.active { background: #42A5F5; border-color: #42A5F5; color: #fff; }
 .btn { padding: 12px; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 10px; }
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-secondary { background: #F5F5F5; color: var(--text); }
@@ -427,12 +429,12 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
   const DOW_NAMES = ['日','月','火','水','木','金','土'];
   const ALL_DAYS = [0,1,2,3,4,5,6];
   const DEFAULT_ITEMS = [
-    { id:'i1', emoji:'🎒', label:'ランドセル', order:0, days:[1,2,3,4,5] },
-    { id:'i3', emoji:'✏️', label:'ふでばこ', order:1, days:[1,2,3,4,5] },
-    { id:'i5', emoji:'💧', label:'すいとう', order:2, days:[0,1,2,3,4,5,6] },
-    { id:'i7', emoji:'📚', label:'きょうかしょ', order:3, days:[1,2,3,4,5] },
-    { id:'i8', emoji:'👟', label:'うわばき', order:4, days:[1] },
-    { id:'i10', emoji:'🧢', label:'ぼうし', order:5, days:[1,2,3,4,5] }
+    { id:'i1',  emoji:'🎒', label:'ランドセル',   order:0, asaDays:[1,2,3,4,5],     kaeriDays:[1,2,3,4,5] },
+    { id:'i3',  emoji:'✏️', label:'ふでばこ',     order:1, asaDays:[1,2,3,4,5],     kaeriDays:[1,2,3,4,5] },
+    { id:'i5',  emoji:'💧', label:'すいとう',     order:2, asaDays:[0,1,2,3,4,5,6], kaeriDays:[0,1,2,3,4,5,6] },
+    { id:'i7',  emoji:'📚', label:'きょうかしょ', order:3, asaDays:[1,2,3,4,5],     kaeriDays:[1,2,3,4,5] },
+    { id:'i8',  emoji:'👟', label:'うわばき',     order:4, asaDays:[1],             kaeriDays:[5] },
+    { id:'i10', emoji:'🧢', label:'ぼうし',       order:5, asaDays:[1,2,3,4,5],     kaeriDays:[1,2,3,4,5] }
   ];
   const EMOJI_LIST = [
     '🎒','📓','✏️','🤧','💧','😷','📚','👟','🍱','🧢','📐','📏','🖍️','🎨','✂️','📎','📖','🗂️','🎵','🎹',
@@ -461,13 +463,26 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
 
   function todayItems() {
     const dow = todayDow();
-    return items.filter(it => { const d = it.days || ALL_DAYS; return d.includes(dow); }).sort((a,b) => a.order - b.order);
+    return items.filter(it => {
+      const d = kidMode === 'asa'
+        ? (it.asaDays   !== undefined ? it.asaDays   : (it.days || ALL_DAYS))
+        : (it.kaeriDays !== undefined ? it.kaeriDays : (it.days || ALL_DAYS));
+      return d.includes(dow);
+    }).sort((a,b) => a.order - b.order);
   }
 
   function load() {
     try { items = JSON.parse(localStorage.getItem(KEYS.items)) || []; } catch(e) { items=[]; }
     if (!items.length) items = JSON.parse(JSON.stringify(DEFAULT_ITEMS));
-    items.forEach(it => { if (!it.days) it.days = ALL_DAYS.slice(); });
+    items.forEach(it => {
+      if (it.asaDays === undefined && it.kaeriDays === undefined) {
+        const fallback = it.days || ALL_DAYS.slice();
+        it.asaDays = fallback.slice();
+        it.kaeriDays = fallback.slice();
+      }
+      if (it.asaDays === undefined)   it.asaDays   = (it.days || ALL_DAYS).slice();
+      if (it.kaeriDays === undefined) it.kaeriDays = (it.days || ALL_DAYS).slice();
+    });
     try { today = JSON.parse(localStorage.getItem(KEYS.today)) || {date:'',checked:[],returnChecked:[]}; } catch(e) { today={date:'',checked:[],returnChecked:[]}; }
     if (!today.returnChecked) today.returnChecked = [];
     try { history = JSON.parse(localStorage.getItem(KEYS.history)) || []; } catch(e) { history=[]; }
@@ -775,7 +790,11 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
       if (item.photo) row.innerHTML='<img class="m-photo" src="'+item.photo+'">';
       else row.innerHTML='<span class="m-icon">'+item.emoji+'</span>';
       const info=document.createElement('div'); info.style.cssText='flex:1;min-width:0;';
-      info.innerHTML='<div class="m-label">'+item.label+'</div><div class="m-days">'+(item.days||ALL_DAYS).map(d=>DOW_NAMES[d]).join(' ')+'</div>';
+      const _asaDays   = item.asaDays   !== undefined ? item.asaDays   : (item.days || ALL_DAYS);
+      const _kaeriDays = item.kaeriDays !== undefined ? item.kaeriDays : (item.days || ALL_DAYS);
+      const _asaStr   = _asaDays.length   ? '🌅'+_asaDays.map(d=>DOW_NAMES[d]).join('')   : '🌅なし';
+      const _kaeriStr = _kaeriDays.length ? '🏠'+_kaeriDays.map(d=>DOW_NAMES[d]).join('') : '🏠なし';
+      info.innerHTML='<div class="m-label">'+item.label+'</div><div class="m-days">'+_asaStr+'　'+_kaeriStr+'</div>';
       row.appendChild(info);
       if (i>0){const b=document.createElement('button');b.className='m-up';b.textContent='↑';b.addEventListener('click',()=>{swapOrder(item.id,sorted[i-1].id);renderParentTab();});row.appendChild(b);}
       if (i<sorted.length-1){const b=document.createElement('button');b.className='m-down';b.textContent='↓';b.addEventListener('click',()=>{swapOrder(item.id,sorted[i+1].id);renderParentTab();});row.appendChild(b);}
@@ -799,7 +818,9 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
     const form=document.createElement('div'); form.className='add-form';
     let selectedEmoji = existing ? existing.emoji : '📦';
     let selectedPhoto = existing ? (existing.photo||'') : '';
-    let selectedDays = existing ? (existing.days||ALL_DAYS).slice() : [1,2,3,4,5];
+    const _fb = existing ? ((existing.days||[1,2,3,4,5]).slice()) : [1,2,3,4,5];
+    let selectedAsaDays   = existing ? (existing.asaDays   !== undefined ? existing.asaDays.slice()   : _fb.slice()) : [1,2,3,4,5];
+    let selectedKaeriDays = existing ? (existing.kaeriDays !== undefined ? existing.kaeriDays.slice() : _fb.slice()) : [1,2,3,4,5];
 
     // Photo upload
     form.innerHTML='<label>📷 しゃしんで ついか (えらべます)</label>';
@@ -840,22 +861,34 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
     const nlbl=document.createElement('label');nlbl.textContent='なまえ';form.appendChild(nlbl);
     const inp=document.createElement('input');inp.type='text';inp.value=existing?existing.label:'';inp.placeholder='もちものの なまえ';form.appendChild(inp);
 
-    // Days
-    const dlbl=document.createElement('label');dlbl.textContent='もっていく ようび';form.appendChild(dlbl);
-    const dayPicker=document.createElement('div');dayPicker.className='day-picker';
+    // Days (朝)
+    const asaLbl=document.createElement('label');asaLbl.textContent='🌅 朝に もっていく ようび';form.appendChild(asaLbl);
+    const asaRow=document.createElement('div');asaRow.className='day-picker day-picker-asa';
     DOW_NAMES.forEach((name,i)=>{
-      const b=document.createElement('button');b.type='button';b.className='day-pick'+(selectedDays.includes(i)?' active':'');b.textContent=name;
-      b.addEventListener('click',()=>{ if(selectedDays.includes(i)) selectedDays=selectedDays.filter(x=>x!==i); else selectedDays.push(i); b.classList.toggle('active',selectedDays.includes(i)); });
-      dayPicker.appendChild(b);
+      const b=document.createElement('button');b.type='button';b.className='day-pick'+(selectedAsaDays.includes(i)?' active':'');b.textContent=name;
+      b.addEventListener('click',()=>{ if(selectedAsaDays.includes(i)) selectedAsaDays=selectedAsaDays.filter(x=>x!==i); else selectedAsaDays.push(i); b.classList.toggle('active',selectedAsaDays.includes(i)); });
+      asaRow.appendChild(b);
     });
-    form.appendChild(dayPicker);
+    form.appendChild(asaRow);
+
+    // Days (帰り)
+    const kaeriLbl=document.createElement('label');kaeriLbl.textContent='🏠 かえりに もちかえる ようび';form.appendChild(kaeriLbl);
+    const kaeriRow=document.createElement('div');kaeriRow.className='day-picker day-picker-kaeri';
+    DOW_NAMES.forEach((name,i)=>{
+      const b=document.createElement('button');b.type='button';b.className='day-pick'+(selectedKaeriDays.includes(i)?' active':'');b.textContent=name;
+      b.addEventListener('click',()=>{ if(selectedKaeriDays.includes(i)) selectedKaeriDays=selectedKaeriDays.filter(x=>x!==i); else selectedKaeriDays.push(i); b.classList.toggle('active',selectedKaeriDays.includes(i)); });
+      kaeriRow.appendChild(b);
+    });
+    form.appendChild(kaeriRow);
 
     // Save/Cancel
     const saveBtn=document.createElement('button');saveBtn.className='btn btn-primary';saveBtn.textContent=existing?'ほぞん':'ついか';
     saveBtn.addEventListener('click',()=>{
       const label=inp.value.trim(); if(!label){alert('なまえを いれてください');return;}
-      if(existing){existing.emoji=selectedEmoji;existing.label=label;existing.photo=selectedPhoto||undefined;existing.days=selectedDays.sort();}
-      else{const mx=items.reduce((m,x)=>Math.max(m,x.order),-1);items.push({id:uid(),emoji:selectedEmoji,label,order:mx+1,photo:selectedPhoto||undefined,days:selectedDays.sort()});}
+      const sortedAsa=selectedAsaDays.slice().sort((a,b)=>a-b);
+      const sortedKaeri=selectedKaeriDays.slice().sort((a,b)=>a-b);
+      if(existing){existing.emoji=selectedEmoji;existing.label=label;existing.photo=selectedPhoto||undefined;existing.asaDays=sortedAsa;existing.kaeriDays=sortedKaeri;delete existing.days;}
+      else{const mx=items.reduce((m,x)=>Math.max(m,x.order),-1);items.push({id:uid(),emoji:selectedEmoji,label,order:mx+1,photo:selectedPhoto||undefined,asaDays:sortedAsa,kaeriDays:sortedKaeri});}
       editingId=null;saveItems();renderParentTab();renderKid();
     });
     form.appendChild(saveBtn);
