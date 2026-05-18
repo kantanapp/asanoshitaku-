@@ -1258,13 +1258,20 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
       }
     }, { passive: true });
   }
-  // TOP: 左スワイプ → 最後に使ったモードのチェック画面へ
+  // TOP: 左スワイプ → あさのじゅんび
   addSwipeNav(document.getElementById('top-screen'), {
-    onLeft: () => { showScreen('kid-screen'); renderKid(); }
+    onLeft: () => { kidMode = 'asa'; showScreen('kid-screen'); renderKid(); }
   });
-  // チェック画面: 右スワイプ → TOP
+  // チェック画面: 右スワイプ → 前のページ、左スワイプ → 次のページ
   addSwipeNav(document.getElementById('kid-screen'), {
-    onRight: () => { showScreen('top-screen'); renderTop(); }
+    onRight: () => {
+      if (kidMode === 'kaeri') { kidMode = 'asa'; renderKid(); }
+      else { showScreen('top-screen'); renderTop(); }
+    },
+    onLeft: () => {
+      if (kidMode === 'asa') { kidMode = 'kaeri'; renderKid(); }
+      else { showScreen('top-screen'); renderTop(); }
+    }
   });
 
   // 空白タップ=モード切替、ダブルタップ=TOPへ
