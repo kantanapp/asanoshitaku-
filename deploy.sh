@@ -7,4 +7,4 @@ git commit -m "$MSG"
 git push
 echo ""
 echo "✅ デプロイ完了"
-echo "🌐 https://41morinaga-glitch.github.io/asanoshitaku/"
+echo "🌐 https://kantanapp.github.io/asanoshitaku-/"
