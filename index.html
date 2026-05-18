@@ -238,13 +238,8 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
       <span class="top-label">もちかえり チェック</span>
       <span class="top-sub" id="topKaeriStatus"></span>
     </button>
-    <button class="top-btn top-parent" id="goParent">
-      <span class="top-icon">🔒</span>
-      <span class="top-label">おやモード</span>
-    </button>
   </div>
   <div class="how-to" id="howTo">
-    <button class="how-toggle" id="howToggle">📖 つかいかた</button>
     <div class="how-body" id="howBody">
       <div class="how-section">
         <div class="how-title">🎒 あさの じゅんび</div>
@@ -1238,10 +1233,8 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
   }
 
   // === Events ===
-  document.getElementById('howToggle').addEventListener('click',()=>{ document.getElementById('howBody').classList.toggle('show'); });
   document.getElementById('goAsa').addEventListener('click',()=>{ kidMode='asa'; showScreen('kid-screen'); renderKid(); });
   document.getElementById('goKaeri').addEventListener('click',()=>{ kidMode='kaeri'; showScreen('kid-screen'); renderKid(); });
-  document.getElementById('goParent').addEventListener('click',()=>showPin(showParent));
   document.getElementById('kidBack').addEventListener('click',()=>{ showScreen('top-screen'); renderTop(); });
   document.getElementById('parentBack').addEventListener('click',()=>{editingId=null;showScreen('top-screen');renderTop();});
   document.querySelectorAll('.parent-tab').forEach(tab=>tab.addEventListener('click',()=>{currentTab=tab.dataset.tab;editingId=null;renderParentTab();}));
