@@ -216,6 +216,14 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
 .confetti { position: fixed; top: -10px; width: 10px; height: 10px; border-radius: 2px; z-index: 301; animation: confettiFall var(--dur) linear forwards; pointer-events: none; }
 @keyframes confettiFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
 </style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FCCT71YN9J"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-FCCT71YN9J');
+</script>
 </head>
 <body>
 
@@ -517,6 +525,18 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('show','active');
+    if (typeof gtag !== 'undefined') {
+      const pathMap = {
+        'top-screen':    { path: '/top',    title: 'トップ' },
+        'kid-screen':    kidMode === 'kaeri'
+                           ? { path: '/kaeri', title: 'もちかえりチェック' }
+                           : { path: '/asa',   title: 'あさのじゅんび' },
+        'pin-screen':    { path: '/pin',    title: 'PIN入力' },
+        'parent-screen': { path: '/parent', title: '親モード' },
+      };
+      const pg = pathMap[id] || { path: '/' + id, title: id };
+      gtag('event', 'page_view', { page_path: pg.path, page_title: pg.title });
+    }
   }
 
   // === Voice ===
