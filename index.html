@@ -525,6 +525,18 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('show','active');
+    if (typeof gtag !== 'undefined') {
+      const pathMap = {
+        'top-screen':    { path: '/top',    title: 'トップ' },
+        'kid-screen':    kidMode === 'kaeri'
+                           ? { path: '/kaeri', title: 'もちかえりチェック' }
+                           : { path: '/asa',   title: 'あさのじゅんび' },
+        'pin-screen':    { path: '/pin',    title: 'PIN入力' },
+        'parent-screen': { path: '/parent', title: '親モード' },
+      };
+      const pg = pathMap[id] || { path: '/' + id, title: id };
+      gtag('event', 'page_view', { page_path: pg.path, page_title: pg.title });
+    }
   }
 
   // === Voice ===
